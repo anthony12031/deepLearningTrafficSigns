@@ -8,8 +8,8 @@ from keras.optimizers import RMSprop
 from keras.callbacks import ModelCheckpoint, Callback, EarlyStopping
 from keras.utils import np_utils
 
-alto = 64
-COLS = 64
+ALTO = 64
+ANCHO = 64
 CHANNELS = 3
 
 train_dir="./train/"
@@ -19,14 +19,14 @@ train_images = [train_dir+i for i in os.listdir(train_dir)]
 test_images =  [test_dir+i for i in os.listdir(test_dir)]
 
 def read_image(file_path):
-    img = cv2.imread(file_path, cv2.IMREAD_COLOR) #cv2.IMREAD_GRAYSCALE
-    return cv2.resize(img, (alto, COLS), interpolation=cv2.INTER_CUBIC)
+    img = cv2.imread(file_path, cv2.IMREAD_COLOR)
+    return cv2.resize(img, (ALTO, ANCHO), interpolation=cv2.INTER_CUBIC)
 
 
 
 def prep_data(images):
     count = len(images)
-    data = np.ndarray((count, CHANNELS, alto, COLS), dtype=np.uint8)
+    data = np.ndarray((count, CHANNELS, ALTO, ANCHO), dtype=np.uint8)
     for i, image_file in enumerate(images):
         image = read_image(image_file)
         data[i] = image.T
@@ -51,7 +51,7 @@ objective = 'binary_crossentropy'
 def catdog():
     modelo = Sequential()
 
-    modelo.add(Conv2D(32, (3, 3), padding='same', input_shape=(3, alto, COLS), activation='relu'))
+    modelo.add(Conv2D(32, (3, 3), padding='same', input_shape=(3, ALTO, ANCHO), activation='relu'))
     modelo.add(Conv2D(32, (3, 3), padding='same', activation='relu'))
     modelo.add(MaxPooling2D(data_format="channels_first", pool_size=(2, 2)))
 
@@ -85,7 +85,6 @@ model = catdog()
 nb_epoch = 20
 batch_size = 16
 
-## Callback for loss logging per epoch
 class LossHistory(Callback):
     def on_train_begin(self, logs={}):
         self.losses = []
@@ -101,8 +100,6 @@ def entrenar():
     history = LossHistory()
     model.fit(train, labels, batch_size=batch_size, epochs=nb_epoch,
               validation_split=0.25, verbose=1, shuffle=True, callbacks=[history, early_stopping])
-    
-
     predicciones = model.predict(test, verbose=0)
     return predicciones, history
 
