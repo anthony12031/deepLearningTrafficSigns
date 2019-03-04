@@ -17,9 +17,8 @@ ALTO = 32
 ANCHO = 32
 CHANNELS = 3
 
-clase0 = np.array([1.,0.,0.,0.])
-
 def capturarCamara():
+    ultima_prediccion = ""
     cap = cv2.VideoCapture(0)
 #    imagenes_predecir=[]
 #    num_img=10
@@ -31,6 +30,7 @@ def capturarCamara():
         #gray = cv2.cvtColor(frame, cv2.IMREAD_COLOR)
         
         # Display the resulting frame
+        cv2.putText(frame, "Prediccion: {}".format(ultima_prediccion), (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
         cv2.imshow('frame',frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
@@ -38,8 +38,8 @@ def capturarCamara():
         #reescalar la imagen
         frame = cv2.resize(frame, (ALTO, ANCHO), interpolation=cv2.INTER_CUBIC)
         time.sleep(0.1)
-        predecir(frame)
-        
+        ultima_prediccion = predecir(frame)
+       
     # When everything done, release the capture
     cap.release()
     cv2.destroyAllWindows()
@@ -49,15 +49,22 @@ def predecir(imagen):
     prediccion=modelo.predict(np.array(imagen).reshape(-1,32,32,3), verbose=0)
     #print(prediccion)
     clasePredecida=np.argmax(prediccion)
+    label = ""
     #print(clasePredecida)
     if(clasePredecida==0):
-        print("20 km/h")
+        label="20 km/h"
+        print(label)
     if(clasePredecida==1):
-        print("Prohibido adelantar")
+        label="Prohibido adelantar"
+        print(label)
     if(clasePredecida==2):
-        print("Cruce Peatonal")
+        label="Cruce Peatonal"
+        print(label)
     if(clasePredecida==3):
-        print("Giro")
+        label="Giro"
+        print(label)
+    return label
+    
     
 
 capturarCamara()
