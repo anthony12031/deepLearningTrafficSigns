@@ -17,6 +17,7 @@ ALTO = 32
 ANCHO = 32
 CHANNELS = 3
 
+clase0 = np.array([1.,0.,0.,0.])
 
 def capturarCamara():
     cap = cv2.VideoCapture(0)
@@ -36,8 +37,7 @@ def capturarCamara():
         
         #reescalar la imagen
         frame = cv2.resize(frame, (ALTO, ANCHO), interpolation=cv2.INTER_CUBIC)
-        print(frame.shape)
-        time.sleep(0.2)
+        time.sleep(0.1)
         predecir(frame)
         
     # When everything done, release the capture
@@ -47,7 +47,17 @@ def capturarCamara():
 
 def predecir(imagen):
     prediccion=modelo.predict(np.array(imagen).reshape(-1,32,32,3), verbose=0)
-    print(np.argmax(prediccion))
+    #print(prediccion)
+    clasePredecida=np.argmax(prediccion)
+    #print(clasePredecida)
+    if(clasePredecida==0):
+        print("20 km/h")
+    if(clasePredecida==1):
+        print("Prohibido adelantar")
+    if(clasePredecida==2):
+        print("Cruce Peatonal")
+    if(clasePredecida==3):
+        print("Giro")
     
 
 capturarCamara()

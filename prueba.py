@@ -112,4 +112,6 @@ for i in range(0,5):
         print('I am {:.2%} esto es un prohibido'.format(1-predicciones[i][0]))
         
     plt.imshow(test[i].T)
+#    cv2.imshow('image',test[i].T)
+#    cv2.waitKey()
     plt.show()
